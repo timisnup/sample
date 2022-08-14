@@ -1,6 +1,8 @@
 resource "aws_vpc" "sample-vpc" {
-  cidr_block       = "10.0.0.0/16"
-  instance_tenancy = "default"
+  cidr_block           = var.vpc_cidr
+  instance_tenancy     = "default"
+  enable_dns_hostnames = true
+  enable_dns_support   = true
 
   tags = {
     Name = "sample-vpc"
@@ -11,8 +13,10 @@ resource "aws_vpc" "sample-vpc" {
 
 #Public subnet 1
 resource "aws_subnet" "public-sub-1" {
-  vpc_id     = aws_vpc.sample-vpc.id
-  cidr_block = "10.0.1.0/24"
+  vpc_id            = aws_vpc.sample-vpc.id
+  cidr_block        = var.pub1_cidr
+  availability_zone = var.sub_ava1
+
 
   tags = {
     Name = "public-sub-1"
@@ -23,8 +27,9 @@ resource "aws_subnet" "public-sub-1" {
 
 #public subnet 2
 resource "aws_subnet" "public-sub-2" {
-  vpc_id     = aws_vpc.sample-vpc.id
-  cidr_block = "10.0.2.0/24"
+  vpc_id            = aws_vpc.sample-vpc.id
+  cidr_block        = var.pub2_cidr
+  availability_zone = var.sub_ava2
 
   tags = {
     Name = "public-sub-2"
@@ -34,8 +39,9 @@ resource "aws_subnet" "public-sub-2" {
 
 #Private subnet 1
 resource "aws_subnet" "private-sub-1" {
-  vpc_id     = aws_vpc.sample-vpc.id
-  cidr_block = "10.0.3.0/24"
+  vpc_id            = aws_vpc.sample-vpc.id
+  cidr_block        = var.pri1_cidr
+  availability_zone = var.sub_ava1
 
   tags = {
     Name = "private-sub-1"
@@ -45,8 +51,9 @@ resource "aws_subnet" "private-sub-1" {
 
 #Private subnet 2
 resource "aws_subnet" "private-sub-2" {
-  vpc_id     = aws_vpc.sample-vpc.id
-  cidr_block = "10.0.4.0/24"
+  vpc_id            = aws_vpc.sample-vpc.id
+  cidr_block        = var.pri2_cidr
+  availability_zone = var.sub_ava2
 
   tags = {
     Name = "private-sub-2"
@@ -115,7 +122,7 @@ resource "aws_internet_gateway" "igw" {
 #aws route
 resource "aws_route" "public-IGW-route" {
   route_table_id         = aws_route_table.public-rt.id
-  destination_cidr_block = "0.0.0.0/0"
+  destination_cidr_block = var.pub_route_cidr
   gateway_id             = aws_internet_gateway.igw.id
 
 }
